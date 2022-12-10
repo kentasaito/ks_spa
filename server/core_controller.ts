@@ -13,7 +13,20 @@ export class core_controller {
 		return body;
 	}
 
-	static respond(pathname) {
+	static async respond(pathname) {
+		if (pathname === 'ksfw.js') {
+			let body = '';
+			for (const path of ['../client/spa_controller.js', '../client/ws_controller.js', '../client/main.js']) {
+				const url = new URL(path, import.meta.url);
+				const res = await fetch(url);
+				body += await res.text();
+			}
+			return new Response(body, {
+				headers: {
+					'Content-Type': contentType('.js'),
+				},
+			});
+		}
 		for (const directory of ['./client', './design/entry_point']) {
 			try {
 				const body = this.get_body(directory + '/' + pathname);
