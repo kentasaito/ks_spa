@@ -1,0 +1,12 @@
+{
+	"name": "ksfw",
+	"display": "standalone",
+	"start_url": "/",
+	"orientation": "portrait",
+	"icons": [
+		{
+			"src": "/icon.png",
+			"sizes": "192x192"
+		}
+	]
+}
