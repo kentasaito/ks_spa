@@ -3,7 +3,7 @@ export class ksfw {
 	static socket;
 	static timeout_id;
 
-	static initialize_ksfw() {
+	static initialize() {
 		for (const element of document.querySelectorAll('.state')) {
 			element.style.display = 'none';
 			element.style.flexDirection = 'column';
