@@ -1,9 +1,18 @@
-class ws_controller {
+export class ksfw {
 
 	static socket;
 	static timeout_id;
 
-	static initialize_ws_controller() {
+	static initialize_ksfw() {
+		for (const element of document.querySelectorAll('.state')) {
+			element.style.display = 'none';
+			element.style.flexDirection = 'column';
+		}
+		window.onpopstate = event => {
+			this.push_state(event.state.state_name, event.state.params, true);
+		};
+		this.push_state('main', {}, true);
+
 		this.socket = new WebSocket(location.protocol.replace(/http/, 'ws') + '//' + location.hostname + ':' + location.port + '/ws' + (localStorage.getItem('user_uuid') ? '?user_uuid=' + localStorage.getItem('user_uuid') : '') );
 
 		// onopen
@@ -31,5 +40,12 @@ class ws_controller {
 		this.socket.onerror = event => {
 			console.error('onerror:', event);
 		};
+	}
+
+	static push_state(state_name, params = {}, replace = false) {
+		history[replace ? 'replaceState' : 'pushState']({state_name, params}, '');
+		for (const element of document.querySelectorAll('.state')) {
+			element.style.display = element.id === `${state_name}_state` ? 'flex' : 'none';
+		}
 	}
 }

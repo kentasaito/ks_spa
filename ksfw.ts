@@ -1,6 +1,8 @@
+import { extname } from 'https://deno.land/std@0.166.0/path/mod.ts';
+import { contentType } from 'https://deno.land/std@0.166.0/media_types/mod.ts';
 import { DB } from 'https://deno.land/x/sqlite@v3.7.0/mod.ts';
 
-export class ws_controller {
+export class ksfw {
 
 	static client_list = [];
 	static db = new DB('./ksfw.db');
@@ -12,6 +14,50 @@ export class ws_controller {
 				user_uuid TEXT UNIQUE
 			)
 		`);
+	}
+
+	static get_body(path) {
+		if (extname(path) !== '.html') return Deno.readFileSync(path);
+		let body = Deno.readTextFileSync(path);
+		while (body.match(/<!-- include (\S+) -->/)) {
+			body = body.replace(/<!-- include (\S+) -->/g, function () {
+				return this.get_body(arguments[1]).trimEnd();
+			}.bind(this));
+		}
+		return body;
+	}
+
+	static async respond(pathname) {
+		if (pathname === 'ksfw.js') {
+			let body = '';
+			for (const path of ['./ksfw.js']) {
+				const url = new URL(path, import.meta.url);
+				const res = await fetch(url);
+				body += await res.text();
+			}
+			return new Response(body, {
+				headers: {
+					'Content-Type': contentType('.js'),
+				},
+			});
+		}
+		for (const directory of ['./client', './design/entry_point']) {
+			try {
+				const body = this.get_body(directory + '/' + pathname);
+				return new Response(body, {
+					headers: {
+						'Content-Type': contentType(extname(pathname)),
+					},
+				});
+			} catch (error) {
+			}
+		}
+		return new Response('Not Found', {
+			status: 404,
+			headers: {
+				'Content-Type': contentType('.html'),
+			},
+		});
 	}
 
 	static handler(request) {
