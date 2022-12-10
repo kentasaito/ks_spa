@@ -1,9 +1,18 @@
+import { DB } from 'https://deno.land/x/sqlite@v3.7.0/mod.ts';
+
 export class ws_controller {
 
-	static user_list = [];
-	static user_id = 1;
 	static client_list = [];
-	static client_id = 1;
+	static db = new DB('./ksfw.db');
+
+	static {
+		this.db.execute(`
+			CREATE TABLE IF NOT EXISTS user (
+				user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+				user_uuid TEXT UNIQUE
+			)
+		`);
+	}
 
 	static handler(request) {
 		const url = new URL(request.url);
@@ -17,27 +26,32 @@ export class ws_controller {
 
 			// onopen
 			socket.onopen = event => {
-				let user = this.user_list.find(user => user.user_uuid === params.user_uuid);
-				if (!user) {
-					user = {
-						user_id: this.user_id++,
-						user_uuid: crypto.randomUUID(),
-					}
-					this.user_list.push(user);
+
+				let user;
+				let user_uuid = params.user_uuid;
+				while (true) {
+					user = this.db.prepareQuery('SELECT * FROM user WHERE user_uuid = :user_uuid').firstEntry({
+						user_uuid,
+					});
+					if (user) break;
+					user_uuid = crypto.randomUUID()
+					this.db.prepareQuery('INSERT INTO user (user_uuid) VALUES (:user_uuid)').execute({
+						user_uuid,
+					});
 				}
+				const new_user = JSON.parse(JSON.stringify(user));
+				delete new_user.user_uuid;
 				this.client_list.push({
-					user: user,
-					client_id: this.client_id++,
+					user: new_user,
 					socket: event.target,
 				});
+
 				console.log('onopen:', 'number of clients:', this.client_list.length);
 				const client = this.client_list.find(client => client.socket === event.target);
 				socket.send(JSON.stringify({
 					pathname: 'connected',
 					params: {
-						user_id: user.user_id,
-						user_uuid: user.user_uuid,
-						client_id: client.client_id,
+						user,
 					}
 				}));
 			};

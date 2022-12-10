@@ -15,8 +15,9 @@ class ws_controller {
 		this.socket.onmessage = event => {
 			const data = JSON.parse(event.data);
 			if (data.pathname === 'connected') {
-				localStorage.setItem('user_uuid', data.params.user_uuid);
+				localStorage.setItem('user_uuid', data.params.user.user_uuid);
 			}
+console.log(data.params);
 			this[data.pathname](data.params);
 		};
 
