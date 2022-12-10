@@ -17,7 +17,6 @@ class ws_controller {
 			if (data.pathname === 'connected') {
 				localStorage.setItem('user_uuid', data.params.user.user_uuid);
 			}
-console.log(data.params);
 			this[data.pathname](data.params);
 		};
 
