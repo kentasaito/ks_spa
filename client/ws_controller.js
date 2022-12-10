@@ -4,7 +4,7 @@ class ws_controller {
 	static timeout_id;
 
 	static initialize_ws_controller() {
-		this.socket = new WebSocket(location.protocol.replace(/http/, 'ws') + '//' + location.hostname + ':' + location.port + '/ws');
+		this.socket = new WebSocket(location.protocol.replace(/http/, 'ws') + '//' + location.hostname + ':' + location.port + '/ws' + (localStorage.getItem('uuid') ? '?uuid=' + localStorage.getItem('uuid') : '') );
 
 		// onopen
 		this.socket.onopen = () => {

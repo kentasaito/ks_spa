@@ -1,5 +1,7 @@
 export class ws_controller {
 
+	static user_list = [];
+	static user_id = 1;
 	static client_list = [];
 	static client_id = 1;
 
@@ -15,18 +17,26 @@ export class ws_controller {
 
 			// onopen
 			socket.onopen = event => {
-//				const user = model.user_shutoku(params.user_token, request.headers.get('user-agent'), connInfo.remoteAddr.hostname);
+				let user = this.user_list.find(user => user.uuid === params.uuid);
+				if (!user) {
+					user = {
+						user_id: this.user_id++,
+						user_uuid: crypto.randomUUID(),
+					}
+					this.user_list.push(user);
+				}
 				this.client_list.push({
-//					user_id: user[0],
+					user: user,
 					client_id: this.client_id++,
 					socket: event.target,
 				});
 				console.log('onopen:', 'number of clients:', this.client_list.length);
-//				const result = model.onopen(params, user);
 				const client = this.client_list.find(client => client.socket === event.target);
 				socket.send(JSON.stringify({
 					pathname: 'connected',
 					params: {
+						user_id: user.user_id,
+						user_uuid: user.user_uuid,
 						client_id: client.client_id,
 					}
 				}));
