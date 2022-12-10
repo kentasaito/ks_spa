@@ -17,7 +17,7 @@ export class ws_controller {
 
 			// onopen
 			socket.onopen = event => {
-				let user = this.user_list.find(user => user.uuid === params.uuid);
+				let user = this.user_list.find(user => user.user_uuid === params.user_uuid);
 				if (!user) {
 					user = {
 						user_id: this.user_id++,

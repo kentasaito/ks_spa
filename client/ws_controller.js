@@ -4,7 +4,7 @@ class ws_controller {
 	static timeout_id;
 
 	static initialize_ws_controller() {
-		this.socket = new WebSocket(location.protocol.replace(/http/, 'ws') + '//' + location.hostname + ':' + location.port + '/ws' + (localStorage.getItem('uuid') ? '?uuid=' + localStorage.getItem('uuid') : '') );
+		this.socket = new WebSocket(location.protocol.replace(/http/, 'ws') + '//' + location.hostname + ':' + location.port + '/ws' + (localStorage.getItem('user_uuid') ? '?user_uuid=' + localStorage.getItem('user_uuid') : '') );
 
 		// onopen
 		this.socket.onopen = () => {
@@ -14,6 +14,9 @@ class ws_controller {
 		// onmessage
 		this.socket.onmessage = event => {
 			const data = JSON.parse(event.data);
+			if (data.pathname === 'connected') {
+				localStorage.setItem('user_uuid', data.params.user_uuid);
+			}
 			this[data.pathname](data.params);
 		};
 
@@ -21,7 +24,7 @@ class ws_controller {
 		this.socket.onclose = () => {
 			console.log('onclose:');
 			clearTimeout(this.timeout_id);
-			this.timeout_id = setTimeout(this.initialize_ws_controller.bind(this), 3000);
+			this.timeout_id = setTimeout(this.initialize_ws_controller.bind(this), 3000 + Math.random() * 3000);
 		};
 
 		// onerror

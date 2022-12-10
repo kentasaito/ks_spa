@@ -1,6 +1,10 @@
 class spa_controller {
 
 	static initialize_spa_controller() {
+		for (const element of document.querySelectorAll('.state')) {
+			element.style.display = 'none';
+			element.style.flexDirection = 'column';
+		}
 		window.onpopstate = event => {
 			this.push_state(event.state.state_name, event.state.params, true);
 		};
