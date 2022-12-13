@@ -125,4 +125,10 @@ export class ksfw {
 			return this.respond(pathname);
 		}
 	}
+
+	broadcast(pathname, params) {
+		for (const client of this.client_list) {
+			client.socket.send(JSON.stringify({pathname, params}));
+		}
+	}
 }

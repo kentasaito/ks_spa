@@ -28,11 +28,8 @@ export class controller extends ksfw {
 	}
 
 	post(text) {
-		this.socket.send(JSON.stringify({
-			pathname: 'post',
-			params: {
-				text,
-			}
-		}));
+		this.send('post', {
+			text,
+		});
 	}
 }

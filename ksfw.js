@@ -45,4 +45,8 @@ export class ksfw {
 			element.style.display = element.id === `${state_name}_state` ? 'flex' : 'none';
 		}
 	}
+
+	send(pathname, params) {
+		this.socket.send(JSON.stringify({pathname, params}));
+	}
 }

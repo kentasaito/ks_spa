@@ -4,14 +4,9 @@ import { ksfw } from '../ksfw.ts';
 export class controller extends ksfw {
 
 	post(sender, params) {
-		for (const client of this.client_list) {
-			client.socket.send(JSON.stringify({
-				pathname: 'posted',
-				params: {
-					user: sender.user,
-					text: params.text,
-				}
-			}));
-		}
+		this.broadcast('posted', {
+			user: sender.user,
+			text: params.text,
+		});
 	}
 }
