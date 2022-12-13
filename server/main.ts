@@ -1,8 +1,10 @@
 import { serve, serveTls } from 'https://deno.land/std@0.166.0/http/server.ts';
 import { controller } from './controller.ts';
 
+const c = new controller();
+
 if (parseInt(Deno.env.get('USE_TLS'))) {
-	serveTls(controller.handler.bind(controller), {
+	serveTls(c.handler.bind(c), {
 		port: Deno.env.get('REMOTE_PORT'),
 		certFile: '/home/deno/.getssl/' + Deno.env.get('FQDN') + '/' + Deno.env.get('FQDN') + '.crt',
 		keyFile: '/home/deno/.getssl/' + Deno.env.get('FQDN') + '/' + Deno.env.get('FQDN') + '.key',
@@ -15,7 +17,7 @@ if (parseInt(Deno.env.get('USE_TLS'))) {
 	}
 }
 else {
-	serve(controller.handler.bind(controller), {
+	serve(c.handler.bind(c), {
 		port: Deno.env.get('LOCAL_PORT'),
 	});
 }

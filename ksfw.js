@@ -1,9 +1,6 @@
 export class ksfw {
 
-	static socket;
-	static timeout_id;
-
-	static initialize() {
+	constructor() {
 		for (const element of document.querySelectorAll('.state')) {
 			element.style.display = 'none';
 			element.style.flexDirection = 'column';
@@ -33,7 +30,7 @@ export class ksfw {
 		this.socket.onclose = () => {
 			console.log('onclose:');
 			clearTimeout(this.timeout_id);
-			this.timeout_id = setTimeout(this.initialize_ws_controller.bind(this), 3000 + Math.random() * 3000);
+			this.timeout_id = setTimeout(this.constructor.bind(this), 3000 + Math.random() * 3000);
 		};
 
 		// onerror
@@ -42,7 +39,7 @@ export class ksfw {
 		};
 	}
 
-	static push_state(state_name, params = {}, replace = false) {
+	push_state(state_name, params = {}, replace = false) {
 		history[replace ? 'replaceState' : 'pushState']({state_name, params}, '');
 		for (const element of document.querySelectorAll('.state')) {
 			element.style.display = element.id === `${state_name}_state` ? 'flex' : 'none';

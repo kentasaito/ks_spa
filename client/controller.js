@@ -2,8 +2,8 @@ import { ksfw } from './ksfw.js';
 
 export class controller extends ksfw {
 
-	static initialize() {
-		super.initialize();
+	constructor() {
+		super();
 		document.getElementById('text').focus();
 		document.getElementById('to_about_state').onclick = event => {
 			event.preventDefault();
@@ -17,17 +17,17 @@ export class controller extends ksfw {
 		}
 	}
 
-	static connected(params) {
+	connected(params) {
 		document.getElementById('user_id').innerText = params.user.user_id;
 	}
 
-	static posted(params) {
+	posted(params) {
 		const element = document.createElement('div');
 		element.innerText = 'user_' + params.user.user_id + ': ' + params.text;
 		document.getElementById('output').prepend(element);
 	}
 
-	static post(text) {
+	post(text) {
 		this.socket.send(JSON.stringify({
 			pathname: 'post',
 			params: {

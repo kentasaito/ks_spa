@@ -4,10 +4,9 @@ import { DB } from 'https://deno.land/x/sqlite@v3.7.0/mod.ts';
 
 export class ksfw {
 
-	static client_list = [];
-	static db = new DB('./ksfw.db');
-
-	static {
+	constructor() {
+		this.client_list = [];
+		this.db = new DB('./ksfw.db');
 		this.db.execute(`
 			CREATE TABLE IF NOT EXISTS user (
 				user_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -16,7 +15,7 @@ export class ksfw {
 		`);
 	}
 
-	static get_body(path) {
+	get_body(path) {
 		if (extname(path) !== '.html') return Deno.readFileSync(path);
 		let body = Deno.readTextFileSync(path);
 		while (body.match(/<!-- include (\S+) -->/)) {
@@ -27,7 +26,7 @@ export class ksfw {
 		return body;
 	}
 
-	static async respond(pathname) {
+	async respond(pathname) {
 		if (pathname === 'ksfw.js') {
 			let body = '';
 			for (const path of ['./ksfw.js']) {
@@ -60,7 +59,7 @@ export class ksfw {
 		});
 	}
 
-	static handler(request) {
+	handler(request) {
 		const url = new URL(request.url);
 		const pathname = url.pathname === '/' ? 'index.html' : url.pathname.replace(/^\//, '');
 		const params = {};
